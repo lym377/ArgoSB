@@ -134,13 +134,3 @@ hypt="" bash <(curl -Ls https://raw.githubusercontent.com/yonggekkk/argosb/main/
 [IDX Google免费VPS代理搭建教程（三）：NIX容器最新工作区方式搭建Argo免费节点 | 一次回车搞定一切 | Argo固定隧道一键复活](https://youtu.be/0I5eI1KKx08)
 
 [IDX Google免费VPS代理搭建教程（四）：支持重置后自动启动代理节点功能 | 最简单的保活方法](https://youtu.be/EGrz6Wvevqc)
-
-更新中……
-
-----------------------------------------------------------
-
-
-----------------------------------------------------------
-### 声明：所有代码来源于Github社区与ChatGPT的整合
-
-### Thanks to [VTEXS](https://console.vtexs.com/?affid=1558) for the sponsorship support
