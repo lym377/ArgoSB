@@ -100,7 +100,7 @@ vmpt="" bash <(curl -Ls https://raw.githubusercontent.com/yonggekkk/argosb/main/
 
 Hysteria2协议节点
 ```
-hypt="" bash <(curl -Ls https://raw.githubusercontent.com/yonggekkk/argosb/main/argosb.sh)
+hypt="" bash <(curl -Ls https://raw.githubusercontent.com/lym377/ArgoSB/refs/heads/main/argosb.sh)
 ```
 
 Tuic协议节点
