@@ -68,24 +68,24 @@
 
 * ### 模版1：多个任意协议组合运行
 ```
-sspt="" vlpt="" vmpt="" hypt="" tupt="" xhpt="" anpt="" bash <(curl -Ls https://raw.githubusercontent.com/yonggekkk/argosb/main/argosb.sh)
+sspt="" vlpt="" vmpt="" hypt="" tupt="" xhpt="" anpt="" bash <(curl -Ls https://raw.githubusercontent.com/lym377/ArgoSB/refs/heads/main/argosb.sh)
 ```
 
 * ### 模版2：主流TCP协议或者UDP单个协议运行
 
 Vless-Reality-Vision协议节点
 ```
-vlpt="" bash <(curl -Ls https://raw.githubusercontent.com/yonggekkk/argosb/main/argosb.sh)
+vlpt="" bash <(curl -Ls https://raw.githubusercontent.com/lym377/ArgoSB/refs/heads/main/argosb.sh)
 ```
 
 Vless-Xhttp-Reality协议节点
 ```
-xhpt="" bash <(curl -Ls https://raw.githubusercontent.com/yonggekkk/argosb/main/argosb.sh)
+xhpt="" bash <(curl -Ls https://raw.githubusercontent.com/lym377/ArgoSB/refs/heads/main/argosb.sh)
 ```
 
 Shadowsocks-2022协议节点
 ```
-sspt="" bash <(curl -Ls https://raw.githubusercontent.com/yonggekkk/argosb/main/argosb.sh)
+sspt="" bash <(curl -Ls https://raw.githubusercontent.com/lym377/ArgoSB/refs/heads/main/argosb.sh)
 ```
 
 AnyTLS协议节点
@@ -95,7 +95,7 @@ anpt="" bash <(curl -Ls https://raw.githubusercontent.com/yonggekkk/argosb/main/
 
 Vmess-ws协议节点
 ```
-vmpt="" bash <(curl -Ls https://raw.githubusercontent.com/yonggekkk/argosb/main/argosb.sh)
+vmpt="" bash <(curl -Ls https://raw.githubusercontent.com/lym377/ArgoSB/refs/heads/main/argosb.sh)
 ```
 
 Hysteria2协议节点
@@ -105,7 +105,7 @@ hypt="" bash <(curl -Ls https://raw.githubusercontent.com/lym377/ArgoSB/refs/hea
 
 Tuic协议节点
 ```
-tupt="" bash <(curl -Ls https://raw.githubusercontent.com/yonggekkk/argosb/main/argosb.sh)
+tupt="" bash <(curl -Ls https://raw.githubusercontent.com/lym377/ArgoSB/refs/heads/main/argosb.sh)
 ```
 
 * ### 模版3：仅Argo临时/固定隧道运行
@@ -114,12 +114,12 @@ tupt="" bash <(curl -Ls https://raw.githubusercontent.com/yonggekkk/argosb/main/
 
 仅argo临时隧道节点
 ```
-vmpt="" argo="y" bash <(curl -Ls https://raw.githubusercontent.com/yonggekkk/argosb/main/argosb.sh)
+vmpt="" argo="y" bash <(curl -Ls https://raw.githubusercontent.com/lym377/ArgoSB/refs/heads/main/argosb.sh)
 ```
 
 仅argo固定隧道节点，必须填写端口(vmpt)、域名(agn)、token(agk)
 ```
-vmpt="端口" argo="y" agn="解析的CF域名" agk="CF获取的token" bash <(curl -Ls https://raw.githubusercontent.com/yonggekkk/argosb/main/argosb.sh)
+vmpt="端口" argo="y" agn="解析的CF域名" agk="CF获取的token" bash <(curl -Ls https://raw.githubusercontent.com/lym377/ArgoSB/refs/heads/main/argosb.sh)
 ```
 
 ---------------------------------------------------------
