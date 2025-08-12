@@ -40,6 +40,8 @@ echo "重启脚本命令：agsb res 【或者】 主脚本 res"
 echo "卸载脚本命令：agsb del 【或者】 主脚本 del"
 echo "双栈VPS显示IPv4节点配置命令：ippz=4 agsb list 【或者】 ippz=4 主脚本 list"
 echo "双栈VPS显示IPv6节点配置命令：ippz=6 agsb list 【或者】 ippz=6 主脚本 list"
+echo "---------------------------------------------------------"
+echo
 }
 echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 echo "甬哥Github项目 ：github.com/yonggekkk"
@@ -783,7 +785,7 @@ echo "*********************************************************"
 echo "ArgoSB脚本输出节点配置如下："
 echo
 case "$server_ip" in
-104.28*|\[2a09*) echo "检测到有WARP的IP作为客户端地址 (104.28或者2a09开头的IP)，请手动更换为VPS本地IPV4或者IPV6地址" && sleep 3 ;;
+104.28*|\[2a09*) echo "检测到有WARP的IP作为客户端地址 (104.28或者2a09开头的IP)，请在客户端上把WARP的IP手动更换为VPS本地IPV4或者IPV6地址" && sleep 3 ;;
 esac
 echo
 if [ -e "$HOME/agsb/xray" ]; then
@@ -882,17 +884,15 @@ sbtk=$(cat "$HOME/agsb/sbargotoken.log" 2>/dev/null)
 if [ -n "$sbtk" ]; then
 nametn="当前Argo固定隧道token：$sbtk"
 fi
-argoshow=$(echo "Vmess主协议端口(Argo固定隧道端口)：$port_vm_ws\n当前Argo$name域名：$argodomain\n$nametn\n1、💣443端口的vmess-ws-tls-argo节点\n$vmatls_link1\n\n2、💣80端口的vmess-ws-argo节点\n$vma_link7\n")
+argoshow=$(echo -e "Vmess主协议端口(Argo固定隧道端口)：$port_vm_ws\n当前Argo$name域名：$argodomain\n$nametn\n\n1、💣443端口的vmess-ws-tls-argo节点\n$vmatls_link1\n\n2、💣80端口的vmess-ws-argo节点\n$vma_link7\n")
 fi
 echo "---------------------------------------------------------"
-echo -e "$argoshow"
+echo "$argoshow"
 echo "---------------------------------------------------------"
 echo "聚合节点信息，请查看$HOME/agsb/jh.txt文件或者运行cat $HOME/agsb/jh.txt进行复制"
 echo "---------------------------------------------------------"
 echo "相关快捷方式如下：(首次安装成功后需重连SSH，agsb快捷方式才可生效)"
 showmode
-echo "---------------------------------------------------------"
-echo
 }
 cleandel(){
 for P in /proc/[0-9]*; do if [ -L "$P/exe" ]; then TARGET=$(readlink -f "$P/exe" 2>/dev/null); if echo "$TARGET" | grep -qE '/agsb/c|/agsb/s|/agsb/x'; then PID=$(basename "$P"); kill "$PID" 2>/dev/null && echo "Killed $PID ($TARGET)" || echo "Could not kill $PID ($TARGET)"; fi; fi; done
@@ -937,8 +937,8 @@ if [ -z "$(curl -s4m5 icanhazip.com -k)" ]; then
 echo -e "nameserver 2a00:1098:2b::1\nnameserver 2a00:1098:2c::1\nnameserver 2a01:4f8:c2c:123f::1" > /etc/resolv.conf
 fi
 if [ -n "$(curl -s6m5 icanhazip.com -k)" ]; then
-sendip="2606:4700:d0::a29f:c101"
-xendip="[2606:4700:d0::a29f:c101]"
+sendip="2606:4700:d0::a29f:c001"
+xendip="[2606:4700:d0::a29f:c001]"
 else
 sendip="162.159.192.1"
 xendip="162.159.192.1"
