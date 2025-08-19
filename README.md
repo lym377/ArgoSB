@@ -40,15 +40,16 @@
 | 7、启用tuic | tupt | 端口指定 | 关闭tuic | 端口随机 | 必选之一 【singbox内核：UDP】 |
 | 8、warp开关 | warp | 填写s或者x | 关闭warp | 所有内核协议启用warp | 可选，s表示singbox所有协议启用warp，x表示xray所有协议启用warp |
 | 9、argo开关 | argo | 填写y | 关闭argo隧道 | 关闭argo隧道 | 可选，填写y时，vmess变量vmpt必须启用，且固定隧道必须填写vmpt端口 |
-| 10、argo固定隧道域名 | agn | 解析在CF上的域名 | 使用临时隧道 | 使用临时隧道 | 可选，argo填写y才可激活固定隧道|
+| 10、argo固定隧道域名 | agn | 托管在CF上的域名 | 使用临时隧道 | 使用临时隧道 | 可选，argo填写y才可激活固定隧道|
 | 11、argo固定隧道token | agk | CF获取的ey开头的token | 使用临时隧道 | 使用临时隧道 | 可选，argo填写y才可激活固定隧道 |
 | 12、uuid密码 | uuid | 符合uuid规定格式 | 随机生成 | 随机生成 | 可选 |
 | 13、reality域名（仅支持reality类协议） | reym | 符合reality域名规定 | yahoo | yahoo | 可选，使用CF类域名时，可用作ProxyIP/客户端地址反代IP（建议高位端口或纯IPV6下使用，以防被扫泄露）|
-| 14、切换ipv4或ipv6配置 | ippz | 填写4或者6 | 自动识别IP配置 | 自动识别IP配置 | 可选，4表示IPV4配置输出，6表示IPV6配置输出 |
-| 15、切换ipv4或ipv6出站优先 | ipyx | 填写4或6或46或64 | 系统默认优先 | 系统默认优先 | 可选，46表示IPV4出站优先，64表示IPV6出站优先，4表示仅IPV4出站，6表示仅IPV6出站 |
-| 16、添加所有节点名称前缀 | name | 任意字符 | 默认协议名前缀 | 默认协议名前缀 | 可选 |
-| 17、【仅容器类docker】监听端口，网页查询 | PORT | 端口指定 | 3000 | 3000 | 可选 |
-| 18、【仅容器类docker】启用vless-ws-tls | DOMAIN | 服务器域名 | 关闭vless-ws-tls | 关闭vless-ws-tls | 可选，vless-ws-tls可独立存在，uuid变量必须启用 |
+| 14、vmess客户端host地址 | cdnym | IP解析的CF域名 | vmess为直连 | vmess为直连 | 可选，使用80系CDN或者回源CDN时可设置，否则客户端host地址需手动更改为IP解析的CF的域名|
+| 15、切换ipv4或ipv6配置 | ippz | 填写4或者6 | 自动识别IP配置 | 自动识别IP配置 | 可选，4表示IPV4配置输出，6表示IPV6配置输出 |
+| 16、切换ipv4或ipv6出站优先 | ipyx | 填写4或6或46或64 | 系统默认优先 | 系统默认优先 | 可选，46表示IPV4出站优先，64表示IPV6出站优先，4表示仅IPV4出站，6表示仅IPV6出站 |
+| 17、添加所有节点名称前缀 | name | 任意字符 | 默认协议名前缀 | 默认协议名前缀 | 可选 |
+| 18、【仅容器类docker】监听端口，网页查询 | PORT | 端口指定 | 3000 | 3000 | 可选 |
+| 19、【仅容器类docker】启用vless-ws-tls | DOMAIN | 服务器域名 | 关闭vless-ws-tls | 关闭vless-ws-tls | 可选，vless-ws-tls可独立存在，uuid变量必须启用 |
 
 <img width="926" height="602" alt="fbb5de8b838df475c10561d47ad9202b" src="https://github.com/user-attachments/assets/33935ca5-6724-492e-9fe7-8d4237acb2b4" />
 
@@ -62,35 +63,35 @@
 
 必选其一的协议端口变量：```vmpt=""```、```vmpt="" argo="y"```、```vlpt=""```、```xhpt=""```、```anpt=""```、```hypt=""```、```tupt=""```、```sspt=""```
 
-可选的功能类变量：```warp=""```、```uuid=""```、```reym=""```、```argo=""```、```agn=""```、```agk=""```、```ippz=""```、```ipyx=""```、```name=""```
+可选的功能类变量：```warp=""```、```uuid=""```、```reym=""```、```cdnym=""```、```argo=""```、```agn=""```、```agk=""```、```ippz=""```、```ipyx=""```、```name=""```
 
 请参考```一、自定义变量参数说明```中变量的作用说明，变量值填写在```" "```之间，变量之间空一格，不用的变量可以删除
 
 * ### 模版1：多个任意协议组合运行
 ```
-sspt="" vlpt="" vmpt="" hypt="" tupt="" xhpt="" anpt="" bash <(curl -Ls https://raw.githubusercontent.com/lym377/ArgoSB/refs/heads/main/argosb.sh)
+sspt="" vlpt="" vmpt="" hypt="" tupt="" xhpt="" anpt="" bash <(curl -Ls https://raw.githubusercontent.com/yonggekkk/argosb/main/argosb.sh)
 ```
 
 * ### 模版2：主流TCP或UDP单个协议运行
 
 Vless-Reality-Vision协议节点
 ```
-vlpt="" bash <(curl -Ls https://raw.githubusercontent.com/lym377/ArgoSB/refs/heads/main/argosb.sh)
+vlpt="" bash <(curl -Ls https://raw.githubusercontent.com/yonggekkk/argosb/main/argosb.sh)
 ```
 
 Vless-Xhttp-Reality协议节点
 ```
-xhpt="" bash <(curl -Ls https://raw.githubusercontent.com/lym377/ArgoSB/refs/heads/main/argosb.sh)
+xhpt="" bash <(curl -Ls https://raw.githubusercontent.com/yonggekkk/argosb/main/argosb.sh)
 ```
 
 Shadowsocks-2022协议节点
 ```
-sspt="" bash <(curl -Ls https://raw.githubusercontent.com/lym377/ArgoSB/refs/heads/main/argosb.sh)
+sspt="" bash <(curl -Ls https://raw.githubusercontent.com/yonggekkk/argosb/main/argosb.sh)
 ```
 
 AnyTLS协议节点
 ```
-anpt="" bash <(curl -Ls https://raw.githubusercontent.com/lym377/ArgoSB/refs/heads/main/argosb.sh)
+anpt="" bash <(curl -Ls https://raw.githubusercontent.com/yonggekkk/argosb/main/argosb.sh)
 ```
 
 Vmess-ws协议节点
@@ -100,12 +101,12 @@ vmpt="" bash <(curl -Ls https://raw.githubusercontent.com/yonggekkk/argosb/main/
 
 Hysteria2协议节点
 ```
-hypt="" bash <(curl -Ls https://raw.githubusercontent.com/lym377/ArgoSB/refs/heads/main/argosb.sh)
+hypt="" bash <(curl -Ls https://raw.githubusercontent.com/yonggekkk/argosb/main/argosb.sh)
 ```
 
 Tuic协议节点
 ```
-tupt="" bash <(curl -Ls https://raw.githubusercontent.com/lym377/ArgoSB/refs/heads/main/argosb.sh)
+tupt="" bash <(curl -Ls https://raw.githubusercontent.com/yonggekkk/argosb/main/argosb.sh)
 ```
 
 * ### 模版3：仅Argo临时/固定隧道运行
@@ -114,12 +115,12 @@ tupt="" bash <(curl -Ls https://raw.githubusercontent.com/lym377/ArgoSB/refs/hea
 
 仅argo临时隧道节点
 ```
-vmpt="" argo="y" bash <(curl -Ls https://raw.githubusercontent.com/lym377/ArgoSB/refs/heads/main/argosb.sh)
+vmpt="" argo="y" bash <(curl -Ls https://raw.githubusercontent.com/yonggekkk/argosb/main/argosb.sh)
 ```
 
 仅argo固定隧道节点，必须填写端口(vmpt)、域名(agn)、token(agk)
 ```
-vmpt="端口" argo="y" agn="解析的CF域名" agk="CF获取的token" bash <(curl -Ls https://raw.githubusercontent.com/lym377/ArgoSB/refs/heads/main/argosb.sh)
+vmpt="端口" argo="y" agn="解析的CF域名" agk="CF获取的token" bash <(curl -Ls https://raw.githubusercontent.com/yonggekkk/argosb/main/argosb.sh)
 ```
 
 ---------------------------------------------------------
@@ -149,7 +150,9 @@ vmpt="端口" argo="y" agn="解析的CF域名" agk="CF获取的token" bash <(cur
 
 #### 相关教程可参考[甬哥博客](https://ygkkk.blogspot.com/2025/08/argosb.html)，视频教程如下：
 
-最新推荐：[ArgoSB一键无交互小钢炮脚本💣（一）：VPS/nat VPS在主协议下的应用；仅按一次回车，多协议自由搭配](https://youtu.be/CiXmttY7mhw)
+最新推荐：[ArgoSB一键无交互小钢炮脚本💣（二）：代理节点的IP、端口被封依旧可用！ArgoSB脚本套CDN优选4大方案教程](https://youtu.be/RnUT1CNbCr8)
+
+[ArgoSB一键无交互小钢炮脚本💣（一）：VPS/nat VPS在主协议下的应用；仅按一次回车，多协议自由搭配](https://youtu.be/CiXmttY7mhw)
 
 [Clawcloud爪云、IDX Google VPS的福音：解决服务器IP访问困扰！Argosb脚本新增WARP出站功能，轻松更换落地IP为Cloudflare WARP IP](https://youtu.be/HO_XLBmIYJw)
 
