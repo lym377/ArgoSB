@@ -24,6 +24,7 @@ export port_xh=${xhpt:-''}
 export port_an=${anpt:-''}
 export port_ss=${sspt:-''}
 export ym_vl_re=${reym:-''}
+export cdnym=${cdnym:-''}
 export argo=${argo:-''}
 export ARGO_DOMAIN=${agn:-''}
 export ARGO_AUTH=${agk:-''}
@@ -48,7 +49,7 @@ echo "甬哥Github项目 ：github.com/yonggekkk"
 echo "甬哥Blogger博客 ：ygkkk.blogspot.com"
 echo "甬哥YouTube频道 ：www.youtube.com/@ygkkk"
 echo "ArgoSB一键无交互小钢炮脚本💣"
-echo "当前版本：V25.8.8"
+echo "当前版本：V25.8.18"
 echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 hostname=$(uname -a | awk '{print $2}')
 op=$(cat /etc/redhat-release 2>/dev/null || cat /etc/os-release 2>/dev/null | grep -i pretty_name | cut -d \" -f2)
@@ -445,6 +446,10 @@ port_vm_ws=$(shuf -i 10000-65535 -n 1)
 fi
 echo "$port_vm_ws" > "$HOME/agsb/port_vm_ws"
 echo "Vmess-ws端口：$port_vm_ws"
+if [ -n "$cdnym" ]; then
+echo "$cdnym" > "$HOME/agsb/cdnym"
+echo "80系CDN或者回源CDN的host域名(已托管在CF)：$cdnym"
+fi
 if [ -e "$HOME/agsb/xray" ]; then
 cat >> "$HOME/agsb/xr.json" <<EOF
         {
@@ -673,7 +678,7 @@ echo
 if find /proc/*/exe -type l 2>/dev/null | grep -E '/proc/[0-9]+/exe' | xargs -r readlink 2>/dev/null | grep -Eq 'agsb/(s|x)' || pgrep -f 'agsb/(s|x)' >/dev/null 2>&1 ; then
 [ -f ~/.bashrc ] || touch ~/.bashrc
 sed -i '/yonggekkk/d' ~/.bashrc
-echo "if ! find /proc/*/exe -type l 2>/dev/null | grep -E '/proc/[0-9]+/exe' | xargs -r readlink 2>/dev/null | grep -Eq 'agsb/(s|x)' && ! pgrep -f 'agsb/(s|x)' >/dev/null 2>&1; then echo '检测到系统曾经中断过，现在自动执行ArgoSB脚本的节点恢复操作，请稍等……'; sleep 5; export name=\"${name}\" ipyx=\"${ipyx}\" ippz=\"${ippz}\" argo=\"${argo}\" uuid=\"${uuid}\" $wap=\"${warp}\" $xhp=\"${port_xh}\" $ssp=\"${port_ss}\" $anp=\"${port_an}\" $vlp=\"${port_vl_re}\" $vmp=\"${port_vm_ws}\" $hyp=\"${port_hy2}\" $tup=\"${port_tu}\" reym=\"${ym_vl_re}\" agn=\"${ARGO_DOMAIN}\" agk=\"${ARGO_AUTH}\"; bash <(curl -Ls https://raw.githubusercontent.com/yonggekkk/argosb/main/argosb.sh); fi" >> ~/.bashrc
+echo "if ! find /proc/*/exe -type l 2>/dev/null | grep -E '/proc/[0-9]+/exe' | xargs -r readlink 2>/dev/null | grep -Eq 'agsb/(s|x)' && ! pgrep -f 'agsb/(s|x)' >/dev/null 2>&1; then echo '检测到系统可能中断过，建议在SSH对话框输入 reboot 重启下服务器。现在自动执行ArgoSB脚本的节点恢复操作，请稍等……'; sleep 6; export cdnym=\"${cdnym}\" name=\"${name}\" ipyx=\"${ipyx}\" ippz=\"${ippz}\" argo=\"${argo}\" uuid=\"${uuid}\" $wap=\"${warp}\" $xhp=\"${port_xh}\" $ssp=\"${port_ss}\" $anp=\"${port_an}\" $vlp=\"${port_vl_re}\" $vmp=\"${port_vm_ws}\" $hyp=\"${port_hy2}\" $tup=\"${port_tu}\" reym=\"${ym_vl_re}\" agn=\"${ARGO_DOMAIN}\" agk=\"${ARGO_AUTH}\"; bash <(curl -Ls https://raw.githubusercontent.com/yonggekkk/argosb/main/argosb.sh); fi" >> ~/.bashrc
 COMMAND="agsb"
 SCRIPT_PATH="$HOME/bin/$COMMAND"
 mkdir -p "$HOME/bin"
@@ -682,7 +687,7 @@ chmod +x "$SCRIPT_PATH"
 sed -i '/export PATH="\$HOME\/bin:\$PATH"/d' ~/.bashrc
 echo 'export PATH="$HOME/bin:$PATH"' >> "$HOME/.bashrc"
 grep -qxF 'source ~/.bashrc' ~/.bash_profile 2>/dev/null || echo 'source ~/.bashrc' >> ~/.bash_profile
-. ~/.bashrc
+. ~/.bashrc 2>/dev/null
 crontab -l > /tmp/crontab.tmp 2>/dev/null
 sed -i '/agsb\/sing-box/d' /tmp/crontab.tmp
 sed -i '/agsb\/xray/d' /tmp/crontab.tmp
@@ -780,6 +785,7 @@ rm -rf "$HOME/agsb/jh.txt"
 uuid=$(cat "$HOME/agsb/uuid")
 server_ip=$(cat "$HOME/agsb/server_ip.log")
 sxname=$(cat "$HOME/agsb/name" 2>/dev/null)
+vmcdnym=$(cat "$HOME/agsb/cdnym" 2>/dev/null)
 echo "*********************************************************"
 echo "*********************************************************"
 echo "ArgoSB脚本输出节点配置如下："
@@ -826,11 +832,19 @@ vm_link="vmess://$(echo "{ \"v\": \"2\", \"ps\": \"${sxname}vm-ws-$hostname\", \
 echo "$vm_link" >> "$HOME/agsb/jh.txt"
 echo "$vm_link"
 echo
+if [ -f "$HOME/agsb/cdnym" ]; then
+echo "💣【 vmess-ws 】80系CDN或者回源CDN节点信息如下："
+echo "注：优选IP地址或者端口可自行手动修改"
+vm_cdn_link="vmess://$(echo "{ \"v\": \"2\", \"ps\": \"${sxname}vm-ws-cdn-$hostname\", \"add\": \"104.16.0.0\", \"port\": \"80\", \"id\": \"$uuid\", \"aid\": \"0\", \"scy\": \"auto\", \"net\": \"ws\", \"type\": \"none\", \"host\": \"$vmcdnym\", \"path\": \"/$uuid-vm?ed=2048\", \"tls\": \"\"}" | base64 -w0)"
+echo "$vm_cdn_link" >> "$HOME/agsb/jh.txt"
+echo "$vm_cdn_link"
+echo
+fi
 fi
 if [ -f "$HOME/agsb/port_an" ]; then
 echo "💣【 AnyTLS 】节点信息如下："
 port_an=$(cat "$HOME/agsb/port_an")
-an_link="anytls://$uuid@$server_ip:$port_an?insecure=1#${sxname}anytls-$hostname"
+an_link="anytls://$uuid@$server_ip:$port_an?insecure=1&allowInsecure=1#${sxname}anytls-$hostname"
 echo "$an_link" >> "$HOME/agsb/jh.txt"
 echo "$an_link"
 echo
@@ -846,7 +860,7 @@ fi
 if [ -f "$HOME/agsb/port_tu" ]; then
 echo "💣【 Tuic 】节点信息如下："
 port_tu=$(cat "$HOME/agsb/port_tu")
-tuic5_link="tuic://$uuid:$uuid@$server_ip:$port_tu?congestion_control=bbr&udp_relay_mode=native&alpn=h3&sni=www.bing.com&allow_insecure=1#${sxname}tuic-$hostname"
+tuic5_link="tuic://$uuid:$uuid@$server_ip:$port_tu?congestion_control=bbr&udp_relay_mode=native&alpn=h3&sni=www.bing.com&allow_insecure=1&allowInsecure=1#${sxname}tuic-$hostname"
 echo "$tuic5_link" >> "$HOME/agsb/jh.txt"
 echo "$tuic5_link"
 echo
@@ -899,7 +913,7 @@ for P in /proc/[0-9]*; do if [ -L "$P/exe" ]; then TARGET=$(readlink -f "$P/exe"
 kill -15 $(pgrep -f 'agsb/s' 2>/dev/null) $(pgrep -f 'agsb/c' 2>/dev/null) $(pgrep -f 'agsb/x' 2>/dev/null) >/dev/null 2>&1
 sed -i '/yonggekkk/d' ~/.bashrc
 sed -i '/export PATH="\$HOME\/bin:\$PATH"/d' ~/.bashrc
-. ~/.bashrc
+. ~/.bashrc 2>/dev/null
 crontab -l > /tmp/crontab.tmp 2>/dev/null
 sed -i '/agsb\/sing-box/d' /tmp/crontab.tmp
 sed -i '/agsb\/xray/d' /tmp/crontab.tmp
@@ -934,7 +948,8 @@ for P in /proc/[0-9]*; do if [ -L "$P/exe" ]; then TARGET=$(readlink -f "$P/exe"
 kill -15 $(pgrep -f 'agsb/s' 2>/dev/null) $(pgrep -f 'agsb/c' 2>/dev/null) $(pgrep -f 'agsb/x' 2>/dev/null) >/dev/null 2>&1
 v4orv6(){
 if [ -z "$(curl -s4m5 icanhazip.com -k)" ]; then
-echo -e "nameserver 2a00:1098:2b::1\nnameserver 2a00:1098:2c::1\nnameserver 2a01:4f8:c2c:123f::1" > /etc/resolv.conf
+echo "检测到 纯IPV6 VPS，添加NAT64"
+echo -e "nameserver 2a00:1098:2b::1\nnameserver 2a00:1098:2c::1" > /etc/resolv.conf
 fi
 if [ -n "$(curl -s6m5 icanhazip.com -k)" ]; then
 sendip="2606:4700:d0::a29f:c001"
