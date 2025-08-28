@@ -7,13 +7,14 @@ export LANG=en_US.UTF-8
 [ -z "${xhpt+x}" ] || xhp=yes
 [ -z "${anpt+x}" ] || anp=yes
 [ -z "${sspt+x}" ] || ssp=yes
+[ -z "${arpt+x}" ] || arp=yes
 [ -z "${warp+x}" ] || wap=yes
 if find /proc/*/exe -type l 2>/dev/null | grep -E '/proc/[0-9]+/exe' | xargs -r readlink 2>/dev/null | grep -Eq 'agsb/(s|x)' || pgrep -f 'agsb/(s|x)' >/dev/null 2>&1; then
 if [ "$1" = "rep" ]; then
-[ "$ssp" = yes ] || [ "$vlp" = yes ] || [ "$vmp" = yes ] || [ "$hyp" = yes ] || [ "$tup" = yes ] || [ "$xhp" = yes ] || [ "$anp" = yes ] || { echo "提示：重置协议参数有误，请自查！💣"; exit; }
+[ "$ssp" = yes ] || [ "$vlp" = yes ] || [ "$vmp" = yes ] || [ "$hyp" = yes ] || [ "$tup" = yes ] || [ "$xhp" = yes ] || [ "$anp" = yes ] || [ "$arp" = yes ] || { echo "提示：rep重置协议时，请在脚本前至少设置一个协议变量哦，再见！💣"; exit; }
 fi
 else
-[ "$1" = "del" ] || [ "$ssp" = yes ] || [ "$vlp" = yes ] || [ "$vmp" = yes ] || [ "$hyp" = yes ] || [ "$tup" = yes ] || [ "$xhp" = yes ] || [ "$anp" = yes ] || { echo "提示：未安装ArgoSB脚本，请在脚本前至少设置一个协议变量哦，再见！💣"; exit; }
+[ "$1" = "del" ] || [ "$ssp" = yes ] || [ "$vlp" = yes ] || [ "$vmp" = yes ] || [ "$hyp" = yes ] || [ "$tup" = yes ] || [ "$xhp" = yes ] || [ "$anp" = yes ] || [ "$arp" = yes ] || { echo "提示：未安装ArgoSB脚本，请在脚本前至少设置一个协议变量哦，再见！💣"; exit; }
 fi
 export uuid=${uuid:-''}
 export port_vl_re=${vlpt:-''}
@@ -22,6 +23,7 @@ export port_hy2=${hypt:-''}
 export port_tu=${tupt:-''}
 export port_xh=${xhpt:-''}
 export port_an=${anpt:-''}
+export port_ar=${arpt:-''}
 export port_ss=${sspt:-''}
 export ym_vl_re=${reym:-''}
 export cdnym=${cdnym:-''}
@@ -29,7 +31,6 @@ export argo=${argo:-''}
 export ARGO_DOMAIN=${agn:-''}
 export ARGO_AUTH=${agk:-''}
 export ippz=${ippz:-''}
-export ipyx=${ipyx:-''}
 export warp=${warp:-''}
 export name=${name:-''}
 showmode(){
@@ -37,6 +38,7 @@ echo "ArgoSB脚本项目地址：https://github.com/yonggekkk/ArgoSB"
 echo "主脚本：bash <(curl -Ls https://raw.githubusercontent.com/yonggekkk/argosb/main/argosb.sh)"
 echo "显示节点信息命令：agsb list 【或者】 主脚本 list"
 echo "更换代理协议变量组命令：自定义各种协议变量组 agsb rep 【或者】 自定义各种协议变量组 主脚本 rep"
+echo "更新脚本命令：原已安装的自定义各种协议变量组 主脚本 rep"
 echo "重启脚本命令：agsb res 【或者】 主脚本 res"
 echo "卸载脚本命令：agsb del 【或者】 主脚本 del"
 echo "双栈VPS显示IPv4节点配置命令：ippz=4 agsb list 【或者】 ippz=4 主脚本 list"
@@ -49,7 +51,7 @@ echo "甬哥Github项目 ：github.com/yonggekkk"
 echo "甬哥Blogger博客 ：ygkkk.blogspot.com"
 echo "甬哥YouTube频道 ：www.youtube.com/@ygkkk"
 echo "ArgoSB一键无交互小钢炮脚本💣"
-echo "当前版本：V25.8.18"
+echo "当前版本：V25.8.27"
 echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 hostname=$(uname -a | awk '{print $2}')
 op=$(cat /etc/redhat-release 2>/dev/null || cat /etc/os-release 2>/dev/null | grep -i pretty_name | cut -d \" -f2)
@@ -77,79 +79,48 @@ echo "所有节点名称前缀：$name"
 fi
 v4v6
 if echo "$v6" | grep -q '^2a09' || echo "$v4" | grep -q '^104.28'; then
-xouttag=direct
-souttag=direct
-wap=warpargo
-echo
-echo "请注意：你已安装了warp"
+s1outtag=direct; s2outtag=direct; x1outtag=direct; x2outtag=direct; xip='"::/0", "0.0.0.0/0"'; sip='"::/0", "0.0.0.0/0"'; wap=warpargo
+echo; echo "请注意：你已安装了warp"
 else
 if [ "$wap" != yes ]; then
-xouttag=direct
-souttag=direct
-wap=warpargo
-elif [ "$warp" = "" ]; then
-xouttag=warp-out
-souttag=warp-out
-wap=warp
-echo
-echo "所有内核协议添加warp全局出站"
-elif [ "$warp" = "x" ]; then
-xouttag=warp-out
-souttag=direct
-wap=warp
-echo
-echo "Xray内核的协议添加warp全局出站"
-elif [ "$warp" = "s" ]; then
-xouttag=direct
-souttag=warp-out
-wap=warp
-echo
-echo "Sing-box内核的协议添加warp全局出站"
+s1outtag=direct; s2outtag=direct; x1outtag=direct; x2outtag=direct; xip='"::/0", "0.0.0.0/0"'; sip='"::/0", "0.0.0.0/0"'; wap=warpargo
 else
-xouttag=direct
-souttag=direct
-wap=warpargo
+case "$warp" in
+""|sx|xs) s1outtag=warp-out; s2outtag=warp-out; x1outtag=warp-out; x2outtag=warp-out; xip='"::/0", "0.0.0.0/0"'; sip='"::/0", "0.0.0.0/0"'; wap=warp ;;
+s ) s1outtag=warp-out; s2outtag=warp-out; x1outtag=direct; x2outtag=direct; xip='"::/0", "0.0.0.0/0"'; sip='"::/0", "0.0.0.0/0"'; wap=warp ;;
+s4) s1outtag=warp-out; s2outtag=direct; x1outtag=direct; x2outtag=direct; xip='"::/0", "0.0.0.0/0"'; sip='"0.0.0.0/0"'; wap=warp ;;
+s6) s1outtag=warp-out; s2outtag=direct; x1outtag=direct; x2outtag=direct; xip='"::/0", "0.0.0.0/0"'; sip='"::/0"'; wap=warp ;;
+x ) s1outtag=direct; s2outtag=direct; x1outtag=warp-out; x2outtag=warp-out; xip='"::/0", "0.0.0.0/0"'; sip='"::/0", "0.0.0.0/0"'; wap=warp ;;
+x4) s1outtag=direct; s2outtag=direct; x1outtag=warp-out; x2outtag=direct; xip='"0.0.0.0/0"'; sip='"::/0", "0.0.0.0/0"'; wap=warp ;;
+x6) s1outtag=direct; s2outtag=direct; x1outtag=warp-out; x2outtag=direct; xip='"::/0"'; sip='"::/0", "0.0.0.0/0"'; wap=warp ;;
+s4x4|x4s4) s1outtag=warp-out; s2outtag=direct; x1outtag=warp-out; x2outtag=direct; xip='"0.0.0.0/0"'; sip='"0.0.0.0/0"'; wap=warp ;;
+s4x6|x6s4) s1outtag=warp-out; s2outtag=direct; x1outtag=warp-out; x2outtag=direct; xip='"::/0"'; sip='"0.0.0.0/0"'; wap=warp ;;
+s6x4|x4s6) s1outtag=warp-out; s2outtag=direct; x1outtag=warp-out; x2outtag=direct; xip='"0.0.0.0/0"'; sip='"::/0"'; wap=warp ;;
+s6x6|x6s6) s1outtag=warp-out; s2outtag=direct; x1outtag=warp-out; x2outtag=direct; xip='"::/0"'; sip='"::/0"'; wap=warp ;;
+sx4|x4s) s1outtag=warp-out; s2outtag=warp-out; x1outtag=warp-out; x2outtag=direct; xip='"0.0.0.0/0"'; sip='"::/0", "0.0.0.0/0"'; wap=warp ;;
+sx6|x6s) s1outtag=warp-out; s2outtag=warp-out; x1outtag=warp-out; x2outtag=direct; xip='"::/0"'; sip='"::/0", "0.0.0.0/0"'; wap=warp ;;
+xs4|s4x) s1outtag=warp-out; s2outtag=direct; x1outtag=warp-out; x2outtag=warp-out; xip='"::/0", "0.0.0.0/0"'; sip='"0.0.0.0/0"'; wap=warp ;;
+xs6|s6x) s1outtag=warp-out; s2outtag=direct; x1outtag=warp-out; x2outtag=warp-out; xip='"::/0", "0.0.0.0/0"'; sip='"::/0"'; wap=warp ;;
+* ) s1outtag=direct; s2outtag=direct; x1outtag=direct; x2outtag=direct; xip='"::/0", "0.0.0.0/0"'; sip='"::/0", "0.0.0.0/0"'; wap=warpargo ;;
+esac
 fi
 fi
-if [ "$ipyx" = "" ]; then
-xrip='ForceIP'
-sbip='prefer_ipv6'
-echo
-elif [ "$ipyx" = "64" ]; then
-xrip='ForceIPv6v4'
-sbip='prefer_ipv6'
-echo
-echo "所有节点IPV6优先"
-elif [ "$ipyx" = "46" ]; then
-xrip='ForceIPv4v6'
-sbip='prefer_ipv4'
-echo
-echo "所有节点IPV4优先"
-elif [ "$ipyx" = "6" ]; then
-xrip='ForceIPv6'
-sbip='ipv6_only'
-echo
-echo "所有节点仅IPV6"
-elif [ "$ipyx" = "4" ]; then
-xrip='ForceIPv4'
-sbip='ipv4_only'
-echo
-echo "所有节点仅IPV4"
-else
-xrip='ForceIP'
-sbip='prefer_ipv6'
-echo
-fi
+case "$warp" in x4) wxryx='ForceIPv4' ;; x6) wxryx='ForceIPv6' ;; *) wxryx='ForceIPv4v6' ;; esac
+case "$warp" in x4|x6|x) if curl -s6m5 icanhazip.com -k >/dev/null; then xryx='ForceIPv4v6' sbyx='prefer_ipv4'; else xryx='ForceIPv4' sbyx='ipv4_only'; fi ;; *) xryx='ForceIPv4v6' sbyx='prefer_ipv4' ;; esac
 }
+
 insuuid(){
-if [ -z "$uuid" ]; then
+if [ -z "$uuid" ] && [ ! -e "$HOME/agsb/uuid" ]; then
 if [ -e "$HOME/agsb/sing-box" ]; then
 uuid=$("$HOME/agsb/sing-box" generate uuid)
 else
 uuid=$("$HOME/agsb/xray" uuid)
 fi
-fi
 echo "$uuid" > "$HOME/agsb/uuid"
+elif [ -n "$uuid" ]; then
+echo "$uuid" > "$HOME/agsb/uuid"
+fi
+uuid=$(cat "$HOME/agsb/uuid")
 echo "UUID密码：$uuid"
 }
 installxray(){
@@ -193,10 +164,13 @@ short_id_x=$(cat "$HOME/agsb/xrk/short_id")
 fi
 if [ -n "$xhp" ]; then
 xhp=xhpt
-if [ -z "$port_xh" ]; then
+if [ -z "$port_xh" ] && [ ! -e "$HOME/agsb/port_xh" ]; then
 port_xh=$(shuf -i 10000-65535 -n 1)
-fi
 echo "$port_xh" > "$HOME/agsb/port_xh"
+elif [ -n "$port_xh" ]; then
+echo "$port_xh" > "$HOME/agsb/port_xh"
+fi
+port_xh=$(cat "$HOME/agsb/port_xh")
 echo "Vless-xhttp-reality端口：$port_xh"
 cat >> "$HOME/agsb/xr.json" <<EOF
     {
@@ -242,10 +216,13 @@ xhp=xhptargo
 fi
 if [ -n "$vlp" ]; then
 vlp=vlpt
-if [ -z "$port_vl_re" ]; then
+if [ -z "$port_vl_re" ] && [ ! -e "$HOME/agsb/port_vl_re" ]; then
 port_vl_re=$(shuf -i 10000-65535 -n 1)
-fi
 echo "$port_vl_re" > "$HOME/agsb/port_vl_re"
+elif [ -n "$port_vl_re" ]; then
+echo "$port_vl_re" > "$HOME/agsb/port_vl_re"
+fi
+port_vl_re=$(cat "$HOME/agsb/port_vl_re")
 echo "Vless-reality-vision端口：$port_vl_re"
 cat >> "$HOME/agsb/xr.json" <<EOF
         {
@@ -287,12 +264,18 @@ vlp=vlptargo
 fi
 if [ -n "$ssp" ]; then
 ssp=sspt
+if [ ! -e "$HOME/agsb/sskey" ]; then
 sskey=$(head -c 16 /dev/urandom | base64 -w0)
 echo "$sskey" > "$HOME/agsb/sskey"
-if [ -z "$port_ss" ]; then
-port_ss=$(shuf -i 10000-65535 -n 1)
 fi
+if [ -z "$port_ss" ] && [ ! -e "$HOME/agsb/port_ss" ]; then
+port_ss=$(shuf -i 10000-65535 -n 1)
 echo "$port_ss" > "$HOME/agsb/port_ss"
+elif [ -n "$port_ss" ]; then
+echo "$port_ss" > "$HOME/agsb/port_ss"
+fi
+sskey=$(cat "$HOME/agsb/sskey")
+port_ss=$(cat "$HOME/agsb/port_ss")
 echo "Shadowsocks-2022端口：$port_ss"
 cat >> "$HOME/agsb/xr.json" <<EOF
         {
@@ -344,10 +327,13 @@ curl -Lso "$HOME/agsb/cert.pem" https://github.com/yonggekkk/ArgoSB/releases/dow
 fi
 if [ -n "$hyp" ]; then
 hyp=hypt
-if [ -z "$port_hy2" ]; then
+if [ -z "$port_hy2" ] && [ ! -e "$HOME/agsb/port_hy2" ]; then
 port_hy2=$(shuf -i 10000-65535 -n 1)
-fi
 echo "$port_hy2" > "$HOME/agsb/port_hy2"
+elif [ -n "$port_hy2" ]; then
+echo "$port_hy2" > "$HOME/agsb/port_hy2"
+fi
+port_hy2=$(cat "$HOME/agsb/port_hy2")
 echo "Hysteria2端口：$port_hy2"
 cat >> "$HOME/agsb/sb.json" <<EOF
     {
@@ -376,10 +362,13 @@ hyp=hyptargo
 fi
 if [ -n "$tup" ]; then
 tup=tupt
-if [ -z "$port_tu" ]; then
+if [ -z "$port_tu" ] && [ ! -e "$HOME/agsb/port_tu" ]; then
 port_tu=$(shuf -i 10000-65535 -n 1)
-fi
 echo "$port_tu" > "$HOME/agsb/port_tu"
+elif [ -n "$port_tu" ]; then
+echo "$port_tu" > "$HOME/agsb/port_tu"
+fi
+port_tu=$(cat "$HOME/agsb/port_tu")
 echo "Tuic端口：$port_tu"
 cat >> "$HOME/agsb/sb.json" <<EOF
         {
@@ -409,10 +398,13 @@ tup=tuptargo
 fi
 if [ -n "$anp" ]; then
 anp=anpt
-if [ -z "$port_an" ]; then
+if [ -z "$port_an" ] && [ ! -e "$HOME/agsb/port_an" ]; then
 port_an=$(shuf -i 10000-65535 -n 1)
-fi
 echo "$port_an" > "$HOME/agsb/port_an"
+elif [ -n "$port_an" ]; then
+echo "$port_an" > "$HOME/agsb/port_an"
+fi
+port_an=$(cat "$HOME/agsb/port_an")
 echo "Anytls端口：$port_an"
 cat >> "$HOME/agsb/sb.json" <<EOF
         {
@@ -436,19 +428,80 @@ EOF
 else
 anp=anptargo
 fi
+if [ -n "$arp" ]; then
+arp=arpt
+if [ -z "$ym_vl_re" ]; then
+ym_vl_re=www.yahoo.com
+fi
+echo "$ym_vl_re" > "$HOME/agsb/ym_vl_re"
+echo "Reality域名：$ym_vl_re"
+mkdir -p "$HOME/agsb/sbk"
+if [ ! -e "$HOME/agsb/sbk/private_key" ]; then
+key_pair=$("$HOME/agsb/sing-box" generate reality-keypair)
+private_key=$(echo "$key_pair" | awk '/PrivateKey/ {print $2}' | tr -d '"')
+public_key=$(echo "$key_pair" | awk '/PublicKey/ {print $2}' | tr -d '"')
+short_id=$("$HOME/agsb/sing-box" generate rand --hex 4)
+echo "$private_key" > "$HOME/agsb/sbk/private_key"
+echo "$public_key" > "$HOME/agsb/sbk/public_key"
+echo "$short_id" > "$HOME/agsb/sbk/short_id"
+fi
+private_key_s=$(cat "$HOME/agsb/sbk/private_key")
+public_key_s=$(cat "$HOME/agsb/sbk/public_key")
+short_id_s=$(cat "$HOME/agsb/sbk/short_id")
+if [ -z "$port_ar" ] && [ ! -e "$HOME/agsb/port_ar" ]; then
+port_ar=$(shuf -i 10000-65535 -n 1)
+echo "$port_ar" > "$HOME/agsb/port_ar"
+elif [ -n "$port_ar" ]; then
+echo "$port_ar" > "$HOME/agsb/port_ar"
+fi
+port_ar=$(cat "$HOME/agsb/port_ar")
+echo "Any-Reality端口：$port_ar"
+cat >> "$HOME/agsb/sb.json" <<EOF
+        {
+            "type":"anytls",
+            "tag":"anyreality-sb",
+            "listen":"::",
+            "listen_port":${port_ar},
+            "users":[
+                {
+                  "password":"${uuid}"
+                }
+            ],
+            "padding_scheme":[],
+            "tls": {
+            "enabled": true,
+            "server_name": "${ym_vl_re}",
+             "reality": {
+              "enabled": true,
+              "handshake": {
+              "server": "${ym_vl_re}",
+              "server_port": 443
+             },
+             "private_key": "$private_key_s",
+             "short_id": ["$short_id_s"]
+            }
+          }
+        },
+EOF
+else
+arp=arptargo
+fi
 }
 
 xrsbvm(){
 if [ -n "$vmp" ]; then
 vmp=vmpt
-if [ -z "$port_vm_ws" ]; then
+if [ -z "$port_vm_ws" ] && [ ! -e "$HOME/agsb/port_vm_ws" ]; then
 port_vm_ws=$(shuf -i 10000-65535 -n 1)
-fi
 echo "$port_vm_ws" > "$HOME/agsb/port_vm_ws"
+elif [ -n "$port_vm_ws" ]; then
+echo "$port_vm_ws" > "$HOME/agsb/port_vm_ws"
+fi
+port_vm_ws=$(cat "$HOME/agsb/port_vm_ws")
 echo "Vmess-ws端口：$port_vm_ws"
 if [ -n "$cdnym" ]; then
 echo "$cdnym" > "$HOME/agsb/cdnym"
-echo "80系CDN或者回源CDN的host域名(已托管在CF)：$cdnym"
+echo "80系CDN或者回源CDN的host域名 (确保IP已解析在CF域名)：$cdnym"
 fi
 if [ -e "$HOME/agsb/xray" ]; then
 cat >> "$HOME/agsb/xr.json" <<EOF
@@ -515,11 +568,11 @@ cat >> "$HOME/agsb/xr.json" <<EOF
       "protocol": "freedom",
       "tag": "direct",
       "settings": {
-      "domainStrategy":"${xrip}"
+      "domainStrategy":"${xryx}"
      }
     },
     {
-      "tag": "warp-out",
+      "tag": "x-warp-out",
       "protocol": "wireguard",
       "settings": {
         "secretKey": "COAYqKrAXaQIGL8+Wkmfe39r1tMMR80JWHVaF443XFQ=",
@@ -537,17 +590,33 @@ cat >> "$HOME/agsb/xr.json" <<EOF
             "endpoint": "${xendip}:2408"
           }
         ],
-        "reserved": [134, 63, 85],
-        "domainStrategy":"${xrip}"
+        "reserved": [134, 63, 85]
         }
-    }
+    },
+    {
+      "tag":"warp-out",
+      "protocol":"freedom",
+        "settings":{
+        "domainStrategy":"${wxryx}"
+       },
+       "proxySettings":{
+       "tag":"x-warp-out"
+     }
+}
   ],
   "routing": {
+    "domainStrategy": "IPOnDemand",
     "rules": [
       {
         "type": "field",
+        "ip": [ ${xip} ],
         "network": "tcp,udp",
-        "outboundTag": "${xouttag}"
+        "outboundTag": "${x1outtag}"
+      },
+      {
+        "type": "field",
+        "network": "tcp,udp",
+        "outboundTag": "${x2outtag}"
       }
     ]
   }
@@ -595,12 +664,14 @@ cat >> "$HOME/agsb/sb.json" <<EOF
         },
        {
         "action": "resolve",
-         "strategy": "${sbip}"
+         "strategy": "${sbyx}"
        },
       {
-        "outbound": "${souttag}"
+        "ip_cidr": [ ${sip} ],         
+        "outbound": "${s1outtag}"
       }
-    ]
+    ],
+    "final": "${s2outtag}"
   }
 }
 EOF
@@ -624,12 +695,12 @@ fi
 sleep 6
 }
 ins(){
-if [ "$hyp" != yes ] && [ "$tup" != yes ] && [ "$anp" != yes ]; then
+if [ "$hyp" != yes ] && [ "$tup" != yes ] && [ "$anp" != yes ] && [ "$arp" != yes ]; then
 installxray
 xrsbvm
 warpsx
 xrsbout
-hyp="hyptargo"; tup="tuptargo"; anp="anptargo"
+hyp="hyptargo"; tup="tuptargo"; anp="anptargo"; arp="arptargo"
 elif [ "$xhp" != yes ] && [ "$vlp" != yes ] && [ "$ssp" != yes ]; then
 installsb
 xrsbvm
@@ -678,7 +749,7 @@ echo
 if find /proc/*/exe -type l 2>/dev/null | grep -E '/proc/[0-9]+/exe' | xargs -r readlink 2>/dev/null | grep -Eq 'agsb/(s|x)' || pgrep -f 'agsb/(s|x)' >/dev/null 2>&1 ; then
 [ -f ~/.bashrc ] || touch ~/.bashrc
 sed -i '/yonggekkk/d' ~/.bashrc
-echo "if ! find /proc/*/exe -type l 2>/dev/null | grep -E '/proc/[0-9]+/exe' | xargs -r readlink 2>/dev/null | grep -Eq 'agsb/(s|x)' && ! pgrep -f 'agsb/(s|x)' >/dev/null 2>&1; then echo '检测到系统可能中断过，建议在SSH对话框输入 reboot 重启下服务器。现在自动执行ArgoSB脚本的节点恢复操作，请稍等……'; sleep 6; export cdnym=\"${cdnym}\" name=\"${name}\" ipyx=\"${ipyx}\" ippz=\"${ippz}\" argo=\"${argo}\" uuid=\"${uuid}\" $wap=\"${warp}\" $xhp=\"${port_xh}\" $ssp=\"${port_ss}\" $anp=\"${port_an}\" $vlp=\"${port_vl_re}\" $vmp=\"${port_vm_ws}\" $hyp=\"${port_hy2}\" $tup=\"${port_tu}\" reym=\"${ym_vl_re}\" agn=\"${ARGO_DOMAIN}\" agk=\"${ARGO_AUTH}\"; bash <(curl -Ls https://raw.githubusercontent.com/yonggekkk/argosb/main/argosb.sh); fi" >> ~/.bashrc
+echo "if ! find /proc/*/exe -type l 2>/dev/null | grep -E '/proc/[0-9]+/exe' | xargs -r readlink 2>/dev/null | grep -Eq 'agsb/(s|x)' && ! pgrep -f 'agsb/(s|x)' >/dev/null 2>&1; then echo '检测到系统可能中断过，或者变量格式错误？建议在SSH对话框输入 reboot 重启下服务器。现在自动执行ArgoSB脚本的节点恢复操作，请稍等……'; sleep 6; export cdnym=\"${cdnym}\" name=\"${name}\" ippz=\"${ippz}\" argo=\"${argo}\" uuid=\"${uuid}\" $wap=\"${warp}\" $xhp=\"${port_xh}\" $ssp=\"${port_ss}\" $anp=\"${port_an}\" $arp=\"${port_ar}\" $vlp=\"${port_vl_re}\" $vmp=\"${port_vm_ws}\" $hyp=\"${port_hy2}\" $tup=\"${port_tu}\" reym=\"${ym_vl_re}\" agn=\"${ARGO_DOMAIN}\" agk=\"${ARGO_AUTH}\"; bash <(curl -Ls https://raw.githubusercontent.com/yonggekkk/argosb/main/argosb.sh); fi" >> ~/.bashrc
 COMMAND="agsb"
 SCRIPT_PATH="$HOME/bin/$COMMAND"
 mkdir -p "$HOME/bin"
@@ -791,7 +862,7 @@ echo "*********************************************************"
 echo "ArgoSB脚本输出节点配置如下："
 echo
 case "$server_ip" in
-104.28*|\[2a09*) echo "检测到有WARP的IP作为客户端地址 (104.28或者2a09开头的IP)，请在客户端上把WARP的IP手动更换为VPS本地IPV4或者IPV6地址" && sleep 3 ;;
+104.28*|\[2a09*) echo "检测到有WARP的IP作为客户端地址 (104.28或者2a09开头的IP)，请把客户端地址上的WARP的IP手动更换为VPS本地IPV4或者IPV6地址" && sleep 3 ;;
 esac
 echo
 if [ -e "$HOME/agsb/xray" ]; then
@@ -801,7 +872,13 @@ public_key_x=$(cat "$HOME/agsb/xrk/public_key" 2>/dev/null)
 short_id_x=$(cat "$HOME/agsb/xrk/short_id" 2>/dev/null)
 sskey=$(cat "$HOME/agsb/sskey" 2>/dev/null)
 fi
-if [ -f "$HOME/agsb/port_xh" ]; then
+if [ -e "$HOME/agsb/sing-box" ]; then
+ym_vl_re=$(cat "$HOME/agsb/ym_vl_re" 2>/dev/null)
+private_key_s=$(cat "$HOME/agsb/sbk/private_key" 2>/dev/null)
+public_key_s=$(cat "$HOME/agsb/sbk/public_key" 2>/dev/null)
+short_id_s=$(cat "$HOME/agsb/sbk/short_id" 2>/dev/null)
+fi
+if grep xhttp-reality "$HOME/agsb/xr.json" >/dev/null 2>&1; then
 echo "💣【 vless-xhttp-reality 】节点信息如下："
 port_xh=$(cat "$HOME/agsb/port_xh")
 vl_xh_link="vless://$uuid@$server_ip:$port_xh?encryption=none&security=reality&sni=$ym_vl_re&fp=chrome&pbk=$public_key_x&sid=$short_id_x&type=xhttp&path=$uuid-xh&mode=auto#${sxname}vl-xhttp-reality-$hostname"
@@ -809,7 +886,7 @@ echo "$vl_xh_link" >> "$HOME/agsb/jh.txt"
 echo "$vl_xh_link"
 echo
 fi
-if [ -f "$HOME/agsb/port_vl_re" ]; then
+if grep reality-vision "$HOME/agsb/xr.json" >/dev/null 2>&1; then
 echo "💣【 vless-reality-vision 】节点信息如下："
 port_vl_re=$(cat "$HOME/agsb/port_vl_re")
 vl_link="vless://$uuid@$server_ip:$port_vl_re?encryption=none&flow=xtls-rprx-vision&security=reality&sni=$ym_vl_re&fp=chrome&pbk=$public_key_x&sid=$short_id_x&type=tcp&headerType=none#${sxname}vl-reality-vision-$hostname"
@@ -817,7 +894,7 @@ echo "$vl_link" >> "$HOME/agsb/jh.txt"
 echo "$vl_link"
 echo
 fi
-if [ -f "$HOME/agsb/port_ss" ]; then
+if grep ss-2022 "$HOME/agsb/xr.json" >/dev/null 2>&1; then
 echo "💣【 Shadowsocks-2022 】节点信息如下："
 port_ss=$(cat "$HOME/agsb/port_ss")
 ss_link="ss://$(echo -n "2022-blake3-aes-128-gcm:$sskey@$server_ip:$port_ss" | base64 -w0)#${sxname}Shadowsocks-2022-$hostname"
@@ -825,7 +902,7 @@ echo "$ss_link" >> "$HOME/agsb/jh.txt"
 echo "$ss_link"
 echo
 fi
-if [ -f "$HOME/agsb/port_vm_ws" ]; then
+if grep vmess-xr "$HOME/agsb/xr.json" >/dev/null 2>&1 || grep vmess-sb "$HOME/agsb/sb.json" >/dev/null 2>&1; then
 echo "💣【 vmess-ws 】节点信息如下："
 port_vm_ws=$(cat "$HOME/agsb/port_vm_ws")
 vm_link="vmess://$(echo "{ \"v\": \"2\", \"ps\": \"${sxname}vm-ws-$hostname\", \"add\": \"$server_ip\", \"port\": \"$port_vm_ws\", \"id\": \"$uuid\", \"aid\": \"0\", \"scy\": \"auto\", \"net\": \"ws\", \"type\": \"none\", \"host\": \"www.bing.com\", \"path\": \"/$uuid-vm?ed=2048\", \"tls\": \"\"}" | base64 -w0)"
@@ -841,7 +918,7 @@ echo "$vm_cdn_link"
 echo
 fi
 fi
-if [ -f "$HOME/agsb/port_an" ]; then
+if grep anytls-sb "$HOME/agsb/sb.json" >/dev/null 2>&1; then
 echo "💣【 AnyTLS 】节点信息如下："
 port_an=$(cat "$HOME/agsb/port_an")
 an_link="anytls://$uuid@$server_ip:$port_an?insecure=1&allowInsecure=1#${sxname}anytls-$hostname"
@@ -849,7 +926,15 @@ echo "$an_link" >> "$HOME/agsb/jh.txt"
 echo "$an_link"
 echo
 fi
-if [ -f "$HOME/agsb/port_hy2" ]; then
+if grep anyreality-sb "$HOME/agsb/sb.json" >/dev/null 2>&1; then
+echo "💣【 Any-Reality 】节点信息如下："
+port_ar=$(cat "$HOME/agsb/port_ar")
+ar_link="anytls://$uuid@$server_ip:$port_ar?security=reality&sni=$ym_vl_re&fp=chrome&pbk=$public_key_s&sid=$short_id_s&type=tcp&headerType=none#${sxname}any-reality-$hostname"
+echo "$ar_link" >> "$HOME/agsb/jh.txt"
+echo "$ar_link"
+echo
+fi
+if grep hy2-sb "$HOME/agsb/sb.json" >/dev/null 2>&1; then
 echo "💣【 Hysteria2 】节点信息如下："
 port_hy2=$(cat "$HOME/agsb/port_hy2")
 hy2_link="hysteria2://$uuid@$server_ip:$port_hy2?security=tls&alpn=h3&insecure=1&sni=www.bing.com#${sxname}hy2-$hostname"
@@ -857,7 +942,7 @@ echo "$hy2_link" >> "$HOME/agsb/jh.txt"
 echo "$hy2_link"
 echo
 fi
-if [ -f "$HOME/agsb/port_tu" ]; then
+if grep tuic5-sb "$HOME/agsb/sb.json" >/dev/null 2>&1; then
 echo "💣【 Tuic 】节点信息如下："
 port_tu=$(cat "$HOME/agsb/port_tu")
 tuic5_link="tuic://$uuid:$uuid@$server_ip:$port_tu?congestion_control=bbr&udp_relay_mode=native&alpn=h3&sni=www.bing.com&allow_insecure=1&allowInsecure=1#${sxname}tuic-$hostname"
@@ -932,7 +1017,7 @@ showmode
 exit
 elif [ "$1" = "rep" ]; then
 cleandel
-find "$HOME/agsb" -mindepth 1 -not -name sing-box -not -name xray -not -name cloudflared -exec rm -rf {} +
+rm -rf "$HOME/agsb"/{sb.json,xr.json,sbargoym.log,sbargotoken.log,argo.log,cdnym}
 echo "ArgoSB重置协议完成，开始更新相关协议变量……" && sleep 3
 echo
 elif [ "$1" = "list" ]; then
@@ -948,7 +1033,6 @@ for P in /proc/[0-9]*; do if [ -L "$P/exe" ]; then TARGET=$(readlink -f "$P/exe"
 kill -15 $(pgrep -f 'agsb/s' 2>/dev/null) $(pgrep -f 'agsb/c' 2>/dev/null) $(pgrep -f 'agsb/x' 2>/dev/null) >/dev/null 2>&1
 v4orv6(){
 if [ -z "$(curl -s4m5 icanhazip.com -k)" ]; then
-echo "检测到 纯IPV6 VPS，添加NAT64"
 echo -e "nameserver 2a00:1098:2b::1\nnameserver 2a00:1098:2c::1" > /etc/resolv.conf
 fi
 if [ -n "$(curl -s6m5 icanhazip.com -k)" ]; then
